@@ -53,49 +53,80 @@ function approveDomains(opts, certs, cb) {
 
 var app = require('express')();
 
+console.log();
 
+var appList = [{
+  key: 'fbBot2',
+  url: 'http://localhost:8002'
+}, {
+  key: 'gAction',
+  url: 'http://localhost:8001'
+}];
 
-app.use('/gAction', function (req, res) {
-  var backendUrl = 'http://localhost:8001' + req.url;
-  // req.pipe(request({ qs:req.query, uri: url })).pipe(res);
-  console.log('\ngAction ' + req.url);
+for (let appInfo of appList) {
+  console.log(`Pass-though: ${appInfo.key} --> ${appInfo.url}`);
 
-  req.pipe(request({
-    url: backendUrl,
-    qs: req.query,
-    method: req.method
-  }, function (error, response, body) {
-    if (error) {
-      if (error.code === 'ECONNREFUSED') {
-        console.error('Refused connection');
-      } else {
-        console.error(error)
+  app.all('/' + appInfo.key, function (req, res) {
+    console.log(`/${appInfo.key} --> ${appInfo.url} ${req.method}`);
+
+    req.pipe(request({
+      url: appInfo.url,
+      qs: req.query,
+      method: req.method
+    }, function (error, response, body) {
+      if (error) {
+        if (error.code === 'ECONNREFUSED') {
+          console.error('Refused connection');
+        } else {
+          console.error(error)
+        }
       }
-    }
-  })).pipe(res);
+    })).pipe(res);
+  });
+}
 
-});
 
-app.use('/fbBot2', function (req, res) {
-  var backendUrl = 'http://localhost:8002' + req.url;
-  // req.pipe(request({ qs:req.query, uri: url })).pipe(res);
-  console.log('\nfbBot2 ' + req.url);
 
-  req.pipe(request({
-    url: backendUrl,
-    qs: req.query,
-    method: req.method
-  }, function (error, response, body) {
-    if (error) {
-      if (error.code === 'ECONNREFUSED') {
-        console.error('Refused connection');
-      } else {
-        console.error(error)
-      }
-    }
-  })).pipe(res);
+// app.all('/gaction', function (req, res) {
+//   let url = 'http://localhost:8001';
+//   console.log('gAction' + ` --> ${url} ${req.method}`);
 
-});
+//   req.pipe(request({
+//     url: url,
+//     qs: req.query,
+//     method: req.method
+//   }, function (error, response, body) {
+//     if (error) {
+//       if (error.code === 'ECONNREFUSED') {
+//         console.error('Refused connection');
+//       } else {
+//         console.error(error)
+//       }
+//     }
+//   })).pipe(res);
+// });
+
+// app.all('/fbBot2', function (req, res) {
+//   let url = 'http://localhost:8002';
+//   console.log('fbBot2' + ` --> ${url} ${req.method}`);
+
+//   req.pipe(request({
+//     url: url,
+//     qs: req.query,
+//     method: req.method
+//   }, function (error, response, body) {
+//     if (error) {
+//       if (error.code === 'ECONNREFUSED') {
+//         console.error('Refused connection');
+//       } else {
+//         console.error(error)
+//       }
+//     }
+//   })).pipe(res);
+// });
+
+
+
 
 
 app.get('/', function (req, res) {
@@ -107,7 +138,7 @@ app.get('/abc', function (req, res) {
 });
 
 app.get('/app1', function (req, res) {
-  console.log(`\nsending app file to ${req.connection.remoteAddress}`);
+  console.log(`Sending app file to ${req.connection.remoteAddress}`);
   var options = {
     headers: {
       'Content-disposition': 'attachment; filename=Wondrous-Badi-App.apk'
@@ -126,5 +157,5 @@ require('http').createServer(lex.middleware(require('redirect-https')())).listen
 // handles your app
 require('https').createServer(lex.httpsOptions, lex.middleware(app)).listen(443, function () {
   // console.log("Listening for ACME tls-sni-01 challenges and serve app on", this.address());
-  console.log("\n\nListening on", this.address());
+  console.log("\nListening on", this.address());
 });
