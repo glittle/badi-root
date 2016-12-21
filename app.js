@@ -51,7 +51,8 @@ function approveDomains(opts, certs, cb) {
   });
 }
 
-var app = require('express')();
+var express = require('express');
+var app = express();
 
 console.log();
 
@@ -61,10 +62,16 @@ var appList = [{
 }, {
   key: 'gAction',
   url: 'http://localhost:8001'
+}, {
+//   key: 'vonic',
+//   url: 'http://localhost:8080'
+// }, {
+  key: 'vue',
+  url: 'http://localhost:8003'
 }];
 
 for (let appInfo of appList) {
-  console.log(`Pass-though: ${appInfo.key} --> ${appInfo.url}`);
+  console.log(`Setup pass-though: ${appInfo.key} --> ${appInfo.url}`);
 
   app.all('/' + appInfo.key, function (req, res) {
     console.log(`/${appInfo.key} --> ${appInfo.url} ${req.method}`);
@@ -126,8 +133,12 @@ for (let appInfo of appList) {
 // });
 
 
+// app.use('/resources', express.static('./resources'))
 
+// app.use(express.static('../Badi-Web1'))
+app.use(express.static('../Badi-Web2/dist'))
 
+// app.use(express.static('C:/Users/glen/Source/Projects/badi-chrome-ext'))
 
 app.get('/', function (req, res) {
   res.end('Hello, World!');
@@ -148,6 +159,9 @@ app.get('/app1', function (req, res) {
     options);
 });
 
+app.get('*', function(req, res){
+  res.redirect('/#' + req.url)
+});
 
 // handles acme-challenge and redirects to https
 require('http').createServer(lex.middleware(require('redirect-https')())).listen(80, function () {
