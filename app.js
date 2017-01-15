@@ -62,12 +62,12 @@ var appList = [{
 }, {
   key: 'gAction',
   url: 'http://localhost:8001'
-}, {
-//   key: 'vonic',
-//   url: 'http://localhost:8080'
-// }, {
-  key: 'vue',
-  url: 'http://localhost:8003'
+    // }, {
+    //   key: 'vonic',
+    //   url: 'http://localhost:8080'
+    // }, {
+    // key: 'vue',
+    // url: 'http://localhost:8003'
 }];
 
 for (let appInfo of appList) {
@@ -135,31 +135,38 @@ for (let appInfo of appList) {
 
 // app.use('/resources', express.static('./resources'))
 
-// app.use(express.static('../Badi-Web1'))
-app.use(express.static('../Badi-Web2/dist'))
+
+// app.get('/sw-badi-web3.js', function (req, res) {
+//   res.sendFile('c:/users/glen/source/repos/Badi-web3/special/sw-badi-web3.js')
+// });
+
+//app.use(express.static('../Badi-Web1'))
+// app.use(express.static('../Badi-Web2/dist'))
+app.use(express.static('../Badi-Web3/dist'))
 
 // app.use(express.static('C:/Users/glen/Source/Projects/badi-chrome-ext'))
 
+
 app.get('/', function (req, res) {
-  res.end('Hello, World!');
+  res.end('The application is being updated!<br><br>Please reload in a few seconds...');
 });
 
 app.get('/abc', function (req, res) {
   res.end('Hello, ABC 123!');
 });
 
-app.get('/app1', function (req, res) {
-  console.log(`Sending app file to ${req.connection.remoteAddress}`);
-  var options = {
-    headers: {
-      'Content-disposition': 'attachment; filename=Wondrous-Badi-App.apk'
-    }
-  };
-  res.sendFile('C:\\Users\\glen\\Source\\Projects\\WondrousBadiMobile\\WondrousBadi\\bin\\Android\\Release\\android-release.apk',
-    options);
-});
+// app.get('/app1', function (req, res) {
+//   console.log(`Sending app file to ${req.connection.remoteAddress}`);
+//   var options = {
+//     headers: {
+//       'Content-disposition': 'attachment; filename=Wondrous-Badi-App.apk'
+//     }
+//   };
+//   res.sendFile('C:\\Users\\glen\\Source\\Projects\\WondrousBadiMobile\\WondrousBadi\\bin\\Android\\Release\\android-release.apk',
+//     options);
+// });
 
-app.get('*', function(req, res){
+app.get('*', function (req, res) {
   res.redirect('/#' + req.url)
 });
 
