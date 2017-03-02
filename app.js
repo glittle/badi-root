@@ -146,14 +146,15 @@ app.use(express.static('../Badi-Web3/dist'))
 
 // app.use(express.static('C:/Users/glen/Source/Projects/badi-chrome-ext'))
 
-
 app.get('/', function (req, res) {
-  res.end('The application is being updated!<br><br>Please reload in a few seconds...');
+  res.end('The application is being updated! Please reload in a few seconds...');
 });
 
 app.get('/abc', function (req, res) {
   res.end('Hello, ABC 123!');
 });
+
+app.use('/images', express.static('../Badi-Images'))
 
 // app.get('/app1', function (req, res) {
 //   console.log(`Sending app file to ${req.connection.remoteAddress}`);
