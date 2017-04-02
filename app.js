@@ -142,7 +142,7 @@ for (let appInfo of appList) {
 
 //app.use(express.static('../Badi-Web1'))
 // app.use(express.static('../Badi-Web2/dist'))
-app.use(express.static('../Badi-Web3/dist'))
+app.use(express.static('../Badi-Web3-live'))
 
 // app.use(express.static('C:/Users/glen/Source/Projects/badi-chrome-ext'))
 
@@ -155,6 +155,7 @@ app.get('/abc', function (req, res) {
 });
 
 app.use('/images', express.static('../Badi-Images'))
+app.use('/scripts', express.static('../scripts'))
 
 // app.get('/app1', function (req, res) {
 //   console.log(`Sending app file to ${req.connection.remoteAddress}`);
@@ -171,7 +172,11 @@ app.get('*', function (req, res) {
   res.redirect('/#' + req.url)
 });
 
-// handles acme-challenge and redirects to https
+// // handles acme-challenge and redirects to https
+// require('http').createServer(app).listen(80, function () {
+//   // console.log("\nListening for ACME http-01 challenges on", this.address());
+// });
+
 require('http').createServer(lex.middleware(require('redirect-https')())).listen(80, function () {
   // console.log("\nListening for ACME http-01 challenges on", this.address());
 });
