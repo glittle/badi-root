@@ -55,7 +55,8 @@ var express = require('express');
 var app = express();
 app.use(compression());
 
-console.log();
+console.log('-------');
+console.log('Root restarted');
 
 var appList = [{
     key: 'fbBot2',
@@ -64,7 +65,7 @@ var appList = [{
     key: 'gAction',
     url: 'http://localhost:8001'
 }, {
-    key: 'yycBus',
+    key: 'yycbus',
     url: 'http://localhost:8005'
         // }, {
         //   key: 'vonic',
