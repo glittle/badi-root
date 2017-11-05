@@ -68,8 +68,8 @@ var appList = [{
     key: 'yycbus',
     url: 'http://localhost:8005'
         // }, {
-        //   key: 'vonic',
-        //   url: 'http://localhost:8080'
+        //     key: 'cmxtrial',
+        //     url: 'http://localhost:8006'
         // }, {
         // key: 'vue',
         // url: 'http://localhost:8003'
@@ -161,6 +161,7 @@ app.get('/abc', function(req, res) {
 
 app.use('/images', express.static('../Badi-Images'))
 app.use('/scripts', express.static('../scripts'))
+app.use('/cmxtrial', express.static('C:\\Dev\\codementorx\\trial\\server\\dist', { index: 'index.html' }))
 
 // app.get('/app1', function (req, res) {
 //   console.log(`Sending app file to ${req.connection.remoteAddress}`);
