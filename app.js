@@ -24,6 +24,12 @@ var lex = require('letsencrypt-express').create({
         webrootPath: '/tmp/acme-challenges'
     }),
 
+    email: 'glen.little@gmail.com',
+
+    agreeTos: true,
+
+    // approveDomains: ['wondrous-badi.ga', 'www.wondrous-badi.ga'],
+
     approveDomains: approveDomains
 });
 
@@ -37,8 +43,8 @@ function approveDomains(opts, certs, cb) {
     if (certs) {
         opts.domains = certs.altnames;
     } else {
-        opts.email = 'glen.little@gmail.com';
-        opts.agreeTos = true;
+        // opts.email = 'glen.little@gmail.com';
+        // opts.agreeTos = true;
     }
 
     // NOTE: you can also change other options such as `challengeType` and `challenge`
@@ -64,6 +70,12 @@ var appList = [{
 }, {
     key: 'gAction',
     url: 'http://localhost:8001'
+}, {
+    key: 'gAction2',
+    url: 'http://localhost:8004'
+}, {
+    key: 'wc-notifier',
+    url: 'http://localhost:8003'
 }, {
     key: 'yycbus',
     url: 'http://localhost:8005'
@@ -183,7 +195,7 @@ app.get('*', function(req, res) {
 //   // console.log("\nListening for ACME http-01 challenges on", this.address());
 // });
 
-require('http').createServer(lex.middleware(require('redirect-https')())).listen(80, function() {
+require('http').createServer(lex.middleware(require('redirect-https')())).listen(8000, function() {
     // console.log("\nListening for ACME http-01 challenges on", this.address());
 });
 
