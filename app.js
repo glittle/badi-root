@@ -62,7 +62,7 @@ var app = express();
 app.use(compression());
 
 console.log('-------');
-console.log('Root restarted');
+console.log('Root restarted at', new Date().toLocaleString());
 
 var appList = [{
     key: 'fbBot2',
@@ -195,12 +195,18 @@ app.get('*', function(req, res) {
 //   // console.log("\nListening for ACME http-01 challenges on", this.address());
 // });
 
-require('http').createServer(lex.middleware(require('redirect-https')())).listen(8000, function() {
-    // console.log("\nListening for ACME http-01 challenges on", this.address());
-});
+require('http').createServer(lex.middleware(require('redirect-https')())).listen(8888,
+    '10.0.0.4',
+    function() {
+        // console.log("\nListening for ACME http-01 challenges on", this.address());
+    });
 
 // handles your app
-require('spdy').createServer(lex.httpsOptions, lex.middleware(app)).listen(443, function() {
-    // console.log("Listening for ACME tls-sni-01 challenges and serve app on", this.address());
-    console.log("\nListening on", this.address());
-});
+require('spdy').createServer(lex.httpsOptions, lex.middleware(app))
+    .listen(443,
+        //        'wondrous-badi.today,www.wondrous-badi.today',
+        '10.0.0.4',
+        function() {
+            // console.log("Listening for ACME tls-sni-01 challenges and serve app on", this.address());
+            console.log("\nListening on", this.address());
+        });
