@@ -5,24 +5,57 @@ const request = require('request');
 var compression = require('compression');
 
 
-var greenlock = require('greenlock-express')
-    .init({
-        packageRoot: __dirname,
+//-----
+// returns an instance of node-letsencrypt with additional helper methods
+var lex = require('letsencrypt-express').create({
+    // set to https://acme-v01.api.letsencrypt.org/directory in production
+    //server: 'staging'
+    server: 'https://acme-v01.api.letsencrypt.org/directory'
 
-        // contact for security and critical bug notices
-        maintainerEmail: "glen.little@gmail.com",
+    // If you wish to replace the default plugins, you may do so here
+    //
+    ,
+    challenges: {
+        'http-01': require('le-challenge-fs').create({
+            webrootPath: '/tmp/acme-challenges'
+        })
+    },
+    store: require('le-store-certbot').create({
+        webrootPath: '/tmp/acme-challenges'
+    }),
 
-        // where to look for configuration
-        configDir: './greenlock.d',
+    email: 'glen.little@gmail.com',
 
-        // whether or not to run at cloudscale
-        cluster: false
+    agreeTos: true,
+
+    // approveDomains: ['wondrous-badi.ga', 'www.wondrous-badi.ga'],
+
+    approveDomains: approveDomains
+});
+
+function approveDomains(opts, certs, cb) {
+    // This is where you check your database and associated
+    // email addresses with domains and agreements and such
+
+
+    // The domains being approved for the first time are listed in opts.domains
+    // Certs being renewed are listed in certs.altnames
+    if (certs) {
+        opts.domains = certs.altnames;
+    } else {
+        // opts.email = 'glen.little@gmail.com';
+        // opts.agreeTos = true;
+    }
+
+    // NOTE: you can also change other options such as `challengeType` and `challenge`
+    // opts.challengeType = 'http-01';
+    // opts.challenge = require('le-challenge-fs').create({});
+
+    cb(null, {
+        options: opts,
+        certs: certs
     });
-// Serves on 80 and 443
-// Get's SSL certificates magically!
-//.serve(app);
-
-
+}
 
 var express = require('express');
 var app = express();
@@ -170,20 +203,18 @@ app.get('*', function(req, res) {
 // });
 
 // require('http').createServer(lex.middleware(require('redirect-https')())).listen(8888,
-// require('http').createServer(lex.middleware(app)).listen(8888,
-//     '10.0.0.4',
-//     function() {
-//         console.log("\nListening for ACME http-01 challenges on", this.address());
-//     });
+require('http').createServer(lex.middleware(app)).listen(8888,
+    '10.0.0.4',
+    function() {
+        console.log("\nListening for ACME http-01 challenges on", this.address());
+    });
 
-// // handles your app
-// require('spdy').createServer(lex.httpsOptions, lex.middleware(app))
-//     .listen(443,
-//         //        'wondrous-badi.today,www.wondrous-badi.today',
-//         '10.0.0.4',
-//         function() {
-//             // console.log("Listening for ACME tls-sni-01 challenges and serve app on", this.address());
-//             console.log("\nListening on", this.address());
-//         });
-
-greenlock.serve(app);
+// handles your app
+require('spdy').createServer(lex.httpsOptions, lex.middleware(app))
+    .listen(443,
+        //        'wondrous-badi.today,www.wondrous-badi.today',
+        '10.0.0.4',
+        function() {
+            // console.log("Listening for ACME tls-sni-01 challenges and serve app on", this.address());
+            console.log("\nListening on", this.address());
+        });

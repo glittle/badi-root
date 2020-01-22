@@ -15,10 +15,12 @@
     },
     "homepage": "https://github.com/glittle/",
     "dependencies": {
-        "express": "^4.15.3",
+        "acme-dns-01-namecheap": "^3.0.1",
+        "compression": "^1.7.4",
+        "express": "^4.17.1",
+        "greenlock-express": "^4.0.3",
         "http": "0.0.0",
-        "letsencrypt-express": "^2.0.6",
-        "request": "^2.81.0",
+        "request": "^2.88.0",
         "spdy": "^3.4.7"
     },
     "devDependencies": {},

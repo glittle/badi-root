@@ -2,17 +2,21 @@
 
 require('letsencrypt-express').create({
 
-  //server: 'https://acme-v01.api.letsencrypt.org/directory'
-  server: 'staging'
+    //server: 'https://acme-v01.api.letsencrypt.org/directory'
+    server: 'staging'
 
-  , email: 'glen.little@gmail.com'
+    ,
+    email: 'glen.little@gmail.com'
 
-  , agreeTos: true
+    ,
+    agreeTos: true
 
-  , approveDomains: ['wondrous-badi.ga', 'www.wondrous-badi.ga']
+    ,
+    approveDomains: ['wondrous-badi.today', 'www.wondrous-badi.today']
 
-  , app: require('express')().use('/', function (req, res) {
-    res.end('Hello, World!');
-  })
+    ,
+    app: require('express')().use('/', function(req, res) {
+        res.end('Hello, World!');
+    })
 
 }).listen(80, 443);
