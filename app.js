@@ -2,7 +2,7 @@
 // const http = require('http');
 // const https = require('https');
 const request = require('request');
-var compression = require('compression');
+const compression = require('compression');
 
 
 var greenlock = require('greenlock-express')
@@ -17,7 +17,27 @@ var greenlock = require('greenlock-express')
 
         // whether or not to run at cloudscale
         cluster: false
+    }); //.ready(httpsWorker);
+
+function httpsWorker (glx) {
+    // Get the raw https server:
+    var httpsServer = glx.httpsServer(null, function (req, res) {
+        res.end("Hello, Encrypted World!");
     });
+
+    httpsServer.listen(443, "10.0.0.4", function () {
+        console.info("Listening on ", httpsServer.address());
+    });
+
+    // Note:
+    // You must ALSO listen on port 80 for ACME HTTP-01 Challenges
+    // (the ACME and http->https middleware are loaded by glx.httpServer)
+    var httpServer = glx.httpServer();
+
+    httpServer.listen(80, "0.0.0.0", function () {
+        console.info("Listening on ", httpServer.address());
+    });
+}
 // Serves on 80 and 443
 // Get's SSL certificates magically!
 //.serve(app);
@@ -27,6 +47,7 @@ var greenlock = require('greenlock-express')
 var express = require('express');
 var app = express();
 app.use(compression());
+// app.use(express.json());
 
 console.log('-------');
 console.log('Root restarted at', new Date().toLocaleString());
@@ -52,30 +73,47 @@ var appList = [{
 }, {
     key: 'yycbusV2',
     url: 'http://localhost:8007'
-        // }, {
-        //     key: 'cmxtrial',
-        //     url: 'http://localhost:8006'
-        // }, {
-        // key: 'vue',
-        // url: 'http://localhost:8003'
+}, {
+    key: 'voiceEmail',
+    url: 'http://localhost:8008'
+    // }, {
+    //     key: 'cmxtrial',
+    //     url: 'http://localhost:8006'
+    // }, {
+    // key: 'vue',
+    // url: 'http://localhost:8003'
 }];
+
+// var proxy = httpProxy.createProxyServer({});
+// proxy.on('error', function (err, req, res) {
+//     console.error(`ERROR`, err);
+// })
 
 for (let appInfo of appList) {
     console.log(`Setup pass-though: ${appInfo.key} --> ${appInfo.url}`);
 
-    app.all('/' + appInfo.key, function(req, res) {
+    app.all('/' + appInfo.key, function (req, res) {
         console.log(`/${appInfo.key} --> ${appInfo.url} ${req.method}`);
+
+        // proxy.web(req, res, {
+        //     target: appInfo.url
+        // }, err => {
+        //     console.error(`ERROR ${appInfo.key}`, err);
+        // });
+        // console.log('req.body', req.body);
+        var qs = req.query;
+        qs.PATH = req.route.path;
 
         req.pipe(request({
             url: appInfo.url,
             qs: req.query,
             method: req.method
-        }, function(error, response, body) {
+        }, function (error, response, body) {
             if (error) {
                 if (error.code === 'ECONNREFUSED') {
-                    console.error('Refused connection');
+                    console.error('Refused connection', error);
                 } else {
-                    console.error(error)
+                    console.error('Error', error)
                 }
             }
         })).pipe(res);
@@ -136,18 +174,18 @@ app.use(express.static('../Badi-Web3-live'))
 
 // app.use(express.static('C:/Users/glen/Source/Projects/badi-chrome-ext'))
 
-app.get('/', function(req, res) {
+app.get('/', function (req, res) {
     res.end('The application is being updated! Please reload in a few seconds...');
 });
 
-app.get('/abc', function(req, res) {
+app.get('/abc', function (req, res) {
     res.end('Hello, ABC 123!');
 });
 
 app.use('/images', express.static('../Badi-Images'))
 app.use('/files', express.static('../Badi-Files'))
 app.use('/scripts', express.static('../scripts'))
-    // app.use('/cmxtrial', express.static('C:\\Dev\\codementorx\\trial\\server\\dist', { index: 'index.html' }))
+// app.use('/cmxtrial', express.static('C:\\Dev\\codementorx\\trial\\server\\dist', { index: 'index.html' }))
 
 // app.get('/app1', function (req, res) {
 //   console.log(`Sending app file to ${req.connection.remoteAddress}`);
@@ -160,7 +198,7 @@ app.use('/scripts', express.static('../scripts'))
 //     options);
 // });
 
-app.get('*', function(req, res) {
+app.get('*', function (req, res) {
     res.redirect('/#' + req.url)
 });
 

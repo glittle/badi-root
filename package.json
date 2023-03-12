@@ -20,10 +20,10 @@
         "express": "^4.17.1",
         "greenlock-express": "^4.0.3",
         "http": "0.0.0",
+        "http-proxy": "^1.18.1",
         "request": "^2.88.0",
         "spdy": "^3.4.7"
     },
-    "devDependencies": {},
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1"
     },
