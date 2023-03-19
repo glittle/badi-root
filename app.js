@@ -78,7 +78,8 @@ var appList = [{
     url: 'http://localhost:8008'
 }, {
     key: 'badiService',
-    url: 'http://localhost:8009'
+    url: 'http://localhost:8009',
+    keyIsStub: true,
     // }, {
     //     key: 'cmxtrial',
     //     url: 'http://localhost:8006'
@@ -95,7 +96,9 @@ var appList = [{
 for (let appInfo of appList) {
     console.log(`Setup pass-though: ${appInfo.key} --> ${appInfo.url}`);
 
-    app.all([`/${appInfo.key}`, `/${appInfo.key}*`], function (req, res) {
+    var watch = appInfo.keyIsStub ? [`/${appInfo.key}`, `/${appInfo.key}*`] : `/${appInfo.key}`
+
+    app.all(watch, function (req, res) {
         console.log(`/${appInfo.key} --> ${appInfo.url} ${req.method} ${req.path}`);
 
         // proxy.web(req, res, {
