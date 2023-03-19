@@ -76,6 +76,9 @@ var appList = [{
 }, {
     key: 'voiceEmail',
     url: 'http://localhost:8008'
+}, {
+    key: 'badiService',
+    url: 'http://localhost:8009'
     // }, {
     //     key: 'cmxtrial',
     //     url: 'http://localhost:8006'
@@ -92,8 +95,8 @@ var appList = [{
 for (let appInfo of appList) {
     console.log(`Setup pass-though: ${appInfo.key} --> ${appInfo.url}`);
 
-    app.all('/' + appInfo.key, function (req, res) {
-        console.log(`/${appInfo.key} --> ${appInfo.url} ${req.method}`);
+    app.all([`/${appInfo.key}`, `/${appInfo.key}*`], function (req, res) {
+        console.log(`/${appInfo.key} --> ${appInfo.url} ${req.method} ${req.path}`);
 
         // proxy.web(req, res, {
         //     target: appInfo.url
@@ -104,8 +107,12 @@ for (let appInfo of appList) {
         var qs = req.query;
         qs.PATH = req.route.path;
 
+        var newUrl = `${appInfo.url}${req.path.substring(appInfo.key.length + 1)}`;
+        console.log(newUrl);
+
         req.pipe(request({
-            url: appInfo.url,
+            url: newUrl,
+            // url: `${appInfo.url}${req.path.substring(appInfo.key.length + 1)}`,
             qs: req.query,
             method: req.method
         }, function (error, response, body) {
